@@ -31,23 +31,46 @@
 2. Click on your created database.
 3. Copy the **Endpoint** (e.g., `database-1.cn2g4mowubxp.us-east-1.rds.amazonaws.com`).
 
-## Step 3: Connect to RDS from an EC2 Instance
+## Step 3: Install MySQL on EC2 Instance
 
-### Install MySQL Client (if not installed)
+### **Update System Packages**
 ```bash
 sudo dnf update -y
-sudo dnf install mysql -y
 ```
 
-### Connect using MySQL Client
+### **Download and Install MySQL 8.0**
 ```bash
-mysql -h database-1.cn2g4mowubxp.us-east-1.rds.amazonaws.com -u admin -p
+sudo wget https://dev.mysql.com/get/mysql80-community-release-el9-4.noarch.rpm
+sudo dnf install mysql80-community-release-el9-4.noarch.rpm -y
+sudo dnf install mysql-community-server -y
 ```
 
-- Enter your password when prompted.
-- If successful, you will enter the MySQL shell.
+### **Start MySQL Service**
+```bash
+sudo systemctl start mysqld
+sudo systemctl enable mysqld
+```
 
-## Step 4: Troubleshooting Connection Issues
+## Step 4: Connect to RDS MySQL from EC2
+
+### **Using MySQL CLI**
+```bash
+sudo mysql -h database-1.cn2g4mowubxp.us-east-1.rds.amazonaws.com -u admin -padminadmin
+```
+
+### **Alternative Connection Attempts**
+```bash
+sudo mysql -h 98.84.170.66 -u root -pAdmin@123
+sudo mysql -h ec2-18-212-3-223.compute-1.amazonaws.com -u root -pAdmin@123
+```
+
+If you see an error like:
+```
+ERROR 1130 (HY000): Host '18.212.3.223' is not allowed to connect to this MySQL server
+```
+This means your MySQL server is restricting remote connections.
+
+## Step 5: Troubleshooting Connection Issues
 
 ### 1. Ensure Security Group Allows Connections
 - Go to **EC2 Dashboard > Security Groups**.
@@ -67,7 +90,7 @@ GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' IDENTIFIED BY 'yourpassword' WITH GRA
 FLUSH PRIVILEGES;
 ```
 
-## Step 5: Connect to RDS from a Local Machine
+## Step 6: Connect to RDS from a Local Machine
 
 ### Install MySQL Client (if not installed)
 #### **Linux/macOS:**
