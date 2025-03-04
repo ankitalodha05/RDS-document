@@ -1,0 +1,89 @@
+**Automated MySQL 8.0 Installation on EC2 Using UserData Script**
+
+## **Introduction**
+This document provides a UserData script that automates the installation and configuration of MySQL 8.0 on an Amazon EC2 instance. When used during instance creation, this script ensures MySQL is installed, configured, and ready for use without manual intervention.
+
+---
+
+## **UserData Script**
+This script is designed for Amazon Linux 2023, Amazon Linux 2, or CentOS-based instances.
+
+```bash
+#!/bin/bash
+# Updating system packages
+dnf update -y
+
+# Downloading and installing MySQL Yum repository
+wget https://dev.mysql.com/get/mysql80-community-release-el9-4.noarch.rpm
+dnf install mysql80-community-release-el9-4.noarch.rpm -y
+
+# Installing MySQL 8.0
+dnf install mysql-community-server -y
+
+# Starting and enabling MySQL service
+systemctl start mysqld
+systemctl enable mysqld
+
+# Retrieving the default root password from logs
+DEFAULT_PASSWORD=$(grep 'password' /var/log/mysqld.log | awk '{print $NF}')
+
+# Setting up a new MySQL root password
+NEW_PASSWORD="MySecurePassword123!"  # Change this to a strong password
+echo "ALTER USER 'root'@'localhost' IDENTIFIED BY '$NEW_PASSWORD';" > /tmp/mysql_init.sql
+
+# Logging into MySQL using the default password and setting the new password
+mysql --connect-expired-password -u root -p"$DEFAULT_PASSWORD" < /tmp/mysql_init.sql
+
+# Cleaning up the temporary SQL file
+rm -f /tmp/mysql_init.sql
+
+# Display MySQL version and status
+mysql -V
+systemctl status mysqld
+```
+
+---
+
+## **How to Use This Script?**
+1. **Launch a new EC2 instance** from the AWS Management Console.
+2. In the **Advanced Details** section, locate the **User data** field.
+3. **Paste** the above script into the **User data** field.
+4. Select **Amazon Linux 2023 / Amazon Linux 2 / CentOS** as the instance OS.
+5. Configure security groups to allow **MySQL (port 3306)** if needed.
+6. Click **Launch** and wait for the instance to initialize.
+
+---
+
+## **What This Script Does?**
+✔ Updates system packages  
+✔ Installs **MySQL 8.0**  
+✔ Starts and enables **MySQL service**  
+✔ Retrieves **default root password**  
+✔ Sets a **new secure root password** (`MySecurePassword123!`)  
+✔ Displays MySQL **version and status**  
+
+---
+
+## **Post-Launch MySQL Access**
+After the instance has launched successfully, you can log in to MySQL using:
+```bash
+mysql -u root -p
+```
+Enter the new password (`MySecurePassword123!` or your chosen password) when prompted.
+
+---
+
+## **Notes:**
+- Change `MySecurePassword123!` to a strong password of your choice.
+- Ensure **port 3306** is open in security groups if you need remote access.
+- You can modify the script to add custom MySQL configurations as needed.
+
+This script automates the entire MySQL setup, making it ideal for quick and consistent deployments of MySQL on AWS EC2 instances.
+
+---
+
+## **Conclusion**
+By using this UserData script, you can streamline MySQL installations on EC2 instances, reducing manual effort and ensuring consistent configurations.
+
+For additional security and performance tuning, refer to the [official MySQL documentation](https://dev.mysql.com/doc/).
+
