@@ -1,11 +1,13 @@
-**Automated MySQL 8.0 Installation on EC2 Using UserData Script**
+# Automated MySQL 8.0 Installation on EC2 Using UserData Script
 
-## **Introduction**
+## Introduction
+
 This document provides a UserData script that automates the installation and configuration of MySQL 8.0 on an Amazon EC2 instance. When used during instance creation, this script ensures MySQL is installed, configured, and ready for use without manual intervention.
 
 ---
 
-## **UserData Script**
+## UserData Script
+
 This script is designed for Amazon Linux 2023, Amazon Linux 2, or CentOS-based instances.
 
 ```bash
@@ -44,7 +46,8 @@ systemctl status mysqld
 
 ---
 
-## **How to Use This Script?**
+## How to Use This Script?
+
 1. **Launch a new EC2 instance** from the AWS Management Console.
 2. In the **Advanced Details** section, locate the **User data** field.
 3. **Paste** the above script into the **User data** field.
@@ -54,7 +57,8 @@ systemctl status mysqld
 
 ---
 
-## **What This Script Does?**
+## What This Script Does?
+
 ✔ Updates system packages  
 ✔ Installs **MySQL 8.0**  
 ✔ Starts and enables **MySQL service**  
@@ -64,16 +68,20 @@ systemctl status mysqld
 
 ---
 
-## **Post-Launch MySQL Access**
+## Post-Launch MySQL Access
+
 After the instance has launched successfully, you can log in to MySQL using:
+
 ```bash
 mysql -u root -p
 ```
+
 Enter the new password (`MySecurePassword123!` or your chosen password) when prompted.
 
 ---
 
-## **Notes:**
+## Notes:
+
 - Change `MySecurePassword123!` to a strong password of your choice.
 - Ensure **port 3306** is open in security groups if you need remote access.
 - You can modify the script to add custom MySQL configurations as needed.
@@ -82,8 +90,8 @@ This script automates the entire MySQL setup, making it ideal for quick and cons
 
 ---
 
-## **Conclusion**
+## Conclusion
+
 By using this UserData script, you can streamline MySQL installations on EC2 instances, reducing manual effort and ensuring consistent configurations.
 
 For additional security and performance tuning, refer to the [official MySQL documentation](https://dev.mysql.com/doc/).
-
